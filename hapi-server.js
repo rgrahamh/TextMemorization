@@ -28,11 +28,27 @@ server.route([
         }
     },
     {
+        method: 'GET',
+        path: '/make-account',
+        config: {
+            description: 'Account creation page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS registration page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ]
+        },
+        handler: function(request, reply){
+            //...
+        }
+    },
+    {
         method: 'PUT',
         path: '/make-account',
         config: {
             description: 'Creates an account.',
-            tags: ['fooze', 'quuxen'],
+            notes: ['If status code is 200: create a new user record in the User table in the database.',
+                    'If status code is 403: return Boom.forbidden("User record already exists...")',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ],
             validate: {
                 payload: {
                     user: Joi.string().required().description('The username of the added user'),
@@ -49,11 +65,61 @@ server.route([
         }
     },
     {
+        method: 'GET',
+        path: '/login',
+        config: {
+            description: 'Login page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS login page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ]
+        },
+        handler: function(request, reply){
+            //...
+        }
+    },
+    {
+        method: 'POST',
+        path: '/login',
+        config: {
+            description: 'Validates user login attempt.',
+            notes: ['If status code is 200: Creates a new session.',
+                    'If status code is 401: return Boom.unauthorized("Incorrect password")',
+                    'If status code is 404: return Boom.notFound("Page not found...")',
+                    'We\'re honestly not sure if we need this route or not. We will know once we learn about user authentication!'
+                   ],
+            validate: {
+                payload: {
+                    user: Joi.string().required().description('The username of the user'),
+                    pass: Joi.string().required().description('The passord of the user'),
+                }
+            }
+        },
+        handler: function(request, reply) {
+            //...
+        }
+    },
+    {
+        method: 'GET',
+        path: '/reset-pass',
+        config: {
+            description: 'Password reset page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ]
+        },
+        handler: function(request, reply){
+            //...
+        }
+    },
+    {
         method: 'PATCH',
         path: '/reset-pass',
         config: {
             description: 'Resets a pass.',
-            tags: ['fooze', 'quuxen'],
+            notes: ['If status code is 200: change password field for given record in the User table in the database.',
+                    'If status code is 406: return Boom.notAcceptable("Current password incorrect...")',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ],
             validate: {
                 payload: {
                     user: Joi.string().required().description('The username of the added user'),
@@ -67,16 +133,31 @@ server.route([
         }
     },
     {
-        method: 'PATCH',
+        method: 'GET',
         path: '/purchase',
         config: {
-            description: 'Resets a pass.',
-            tags: ['fooze', 'quuxen'],
+            description: 'Subscription purchase page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS subscription purchase page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ]
+        },
+        handler: function(request, reply){
+            //...
+        }
+    },
+    {
+        method: 'PUT',
+        path: '/purchase',
+        config: {
+            description: 'Create a purchase record in the Payment table of the database.',
+            notes: ['If status code is 200: create a new purchase record in the Payment table in the database.',
+                    'If status code is 402: return Boom.paymentRequired("Appropriate payment was not received...")',
+                    'If status code is 409: return Boom.conflict("User already has a subscription...")',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ],
             validate: {
                 payload: {
-                    user: Joi.string().required().description('The username of the added user'),
-                    oldPass: Joi.string().required().description('The passord of the added user'),
-                    newPass: Joi.string().required().description('The user\'s full name'),
+                    user: Joi.number().integer().min(0).required().description('The user id  of the user making the purchase')
                 }
             }
         },
