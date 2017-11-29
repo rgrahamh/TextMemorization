@@ -1,5 +1,3 @@
-//Example code by Prof. Nurk
-
 const Hapi = require('hapi');
 const Joi = require('joi');
 const server = new Hapi.Server();
@@ -9,24 +7,6 @@ server.connection({port: 3000});
 
 //Define routes
 server.route([
-    {
-        method: 'GET',
-        path: '/api/foo/{id}',
-        config: {
-            description: 'Fetch a foo by ID',
-            tags: ['fooze'],
-            notes: ['A deeply moving note.',
-                        'A hemidemisemiuaver (64th note).'],
-            validate: {
-                params: {
-                    id: Joi.number().integer().min(1).required().description('Foo of interest')
-                }
-            }
-        },
-        handler: function(reuest, reply){
-            //...
-        }
-    },
     {
         method: 'GET',
         path: '/make-account',
