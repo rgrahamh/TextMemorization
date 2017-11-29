@@ -29,17 +29,54 @@ server.route([
     },
     {
         method: 'PUT',
-        path: '/api/foo/{id}',
+        path: '/make-account',
         config: {
-            description: 'Replace a foo by ID',
+            description: 'Creates an account.',
             tags: ['fooze', 'quuxen'],
             validate: {
-                params: {
-                    id: Joi.number().integer().min(1).required().description('Foo of interest')
-                },
                 payload: {
-                    baz: Joi.string().required().description('Baz-i-fier'),
-                    quux: Joi.string().length(17).description('Optional quux')
+                    user: Joi.string().required().description('The username of the added user'),
+                    pass: Joi.string().required().description('The passord of the added user'),
+                    name: Joi.string().required().description('The user\'s full name'),
+                    email: Joi.string().required().description('The required email contact'),
+                    language: Joi.string().required().description('The preferred language of the user'),
+                    mail: Joi.string().required().description('The user\'s traditional mail address')
+                }
+            }
+        },
+        handler: function(request, reply) {
+            //...
+        }
+    },
+    {
+        method: 'PATCH',
+        path: '/reset-pass',
+        config: {
+            description: 'Resets a pass.',
+            tags: ['fooze', 'quuxen'],
+            validate: {
+                payload: {
+                    user: Joi.string().required().description('The username of the added user'),
+                    oldPass: Joi.string().required().description('The passord of the added user'),
+                    newPass: Joi.string().required().description('The user\'s full name'),
+                }
+            }
+        },
+        handler: function(request, reply) {
+            //...
+        }
+    },
+    {
+        method: 'PATCH',
+        path: '/purchase',
+        config: {
+            description: 'Resets a pass.',
+            tags: ['fooze', 'quuxen'],
+            validate: {
+                payload: {
+                    user: Joi.string().required().description('The username of the added user'),
+                    oldPass: Joi.string().required().description('The passord of the added user'),
+                    newPass: Joi.string().required().description('The user\'s full name'),
                 }
             }
         },
