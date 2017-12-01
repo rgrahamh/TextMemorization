@@ -13,6 +13,14 @@ class User extends Model {
                     from: 'user.login_name',
                     to: 'auth.login_name'
                 }
+            },
+            payment: {
+                relation: Model.OneToManyRelation,
+                modelClass: __dirname + '/Payment',
+                join: {
+                    from: 'user.user_id',
+                    to: 'payment.user_id'
+                }
             }
         }
     }

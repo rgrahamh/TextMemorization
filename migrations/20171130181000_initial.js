@@ -1,18 +1,18 @@
 
 exports.up = function(knex, Promise) {
     .createTable('session', table => {
-        table.increments(); //Name: 'id'
+        table.increments('login_id');
         table.dateTime('last_request_time');
     })
     .then(() => knex.schema.createTable('auth', table => {
-        table.increments(); //Name: 'id'
+        table.increments('login_id');
         table.string('login_name');
         table.string('password');
         table.integer('num_successful_attempts');
         table.integer('num_unsuccessful_attempts');
     }))
     .then(() => knex.schema.createTable('user', table => {
-        table.increments(); //Name: 'id'
+        table.increments('user_id');
         table.string('last_name');
         table.string('first_name');
         table.string('middle_name');
@@ -24,7 +24,7 @@ exports.up = function(knex, Promise) {
         table.boolean('is_registered');
     }))
     .then(() => knex.schema.createTable('payment', table => {
-        table.increments(); //Name: 'id'
+        table.increments('transaction_id');
         table.int('user_id');
         table.float('cost');
         table.dateTime('date');

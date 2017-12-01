@@ -3,7 +3,7 @@ module.exports = {
         client: 'postgresql',
         conenction: {
             host: 'faraday.cse.taylor.edu',
-            database: 'rgrahamh',
+            database: 'memex_2_a',
             user: 'rgrahamh',
             password: 'faxudaku'
         },
@@ -11,4 +11,4 @@ module.exports = {
             tableName: 'knex_migrations'
         }
     }
-}
+};
