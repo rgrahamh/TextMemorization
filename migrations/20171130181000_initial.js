@@ -1,6 +1,6 @@
-
 exports.up = function(knex, Promise) {
-    .createTable('session', table => {
+    return knex.schema
+        .createTable('session', table => {
         table.increments('login_id');
         table.dateTime('last_request_time');
     })
@@ -25,14 +25,11 @@ exports.up = function(knex, Promise) {
     }))
     .then(() => knex.schema.createTable('payment', table => {
         table.increments('transaction_id');
-        table.int('user_id');
+        table.integer('user_id');
         table.float('cost');
         table.dateTime('date');
         table.boolean('paid');
-    }))
-    .catch(err => {
-        console.log(err);
-    });
+    }));
 };
 
 exports.down = function(knex, Promise) {
