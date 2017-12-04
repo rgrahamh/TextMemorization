@@ -1,0 +1,8 @@
+hapi@16
+joi@11
+code@3
+lab@14
+knex
+objection
+pg
+
