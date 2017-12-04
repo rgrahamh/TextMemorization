@@ -3,6 +3,7 @@ const Boom = require('boom');
 const Lab = require('lab');
 const Code = require('code');
 const Joi = require('joi');
+const knex = require('knex');
 const server = new Hapi.Server();
 
 const Session = require('./Session.js');
@@ -49,7 +50,16 @@ server.route([
             }
         },
         handler: function(request, reply) {
-            //...
+           knex('user').insert([
+               {
+                   user: request.payload.user,
+                   pass: request.payload.pass,
+                   name: request.payload.name,
+                   email: request.payload.email,
+                   language: request.payload.language,
+                   mail: request.payload.mail
+               }
+           ]);
         }
     },
     {
