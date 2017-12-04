@@ -1,6 +1,14 @@
 const Hapi = require('hapi');
+const Boom = require('boom');
+const Lab = require('lab');
+const Code = require('code');
 const Joi = require('joi');
 const server = new Hapi.Server();
+
+const Session = require('./Session.js');
+const Auth = require('./Auth.js');
+const User = require('./User.js');
+const Payment = require('./Payment.js');
 
 //Configure the port on which the server will listen
 server.connection({port: 3000});
