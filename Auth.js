@@ -13,6 +13,14 @@ class Auth extends Model {
                     from: 'auth.login_id',
                     to: 'session.login_id'
                 }
+            },
+            user: {
+                relation: Model.BelongsToOne,
+                modelClass: __dirname + '/User',
+                join: {
+                    from: 'auth.login_name',
+                    to: 'user.login_name'
+                }
             }
         }
     }
