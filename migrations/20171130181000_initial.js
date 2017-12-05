@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
         table.integer('num_successful_attempts');
         table.integer('num_unsuccessful_attempts');
     }))
-    .then(() => knex.schema.createTable('user', table => {
+    .then(() => knex.schema.createTable('users', table => {
         table.increments('user_id');
         table.string('last_name');
         table.string('first_name');
@@ -35,7 +35,7 @@ exports.up = function(knex, Promise) {
 exports.down = function(knex, Promise) {
     return knex.schema.dropTable('session')
         .then(() => knex.schema.dropTable('auth'))
-        .then(() => knex.schema.dropTable('user'))
+        .then(() => knex.schema.dropTable('users'))
         .then(() => knex.schema.dropTable('payment'));
 
 };

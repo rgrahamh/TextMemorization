@@ -1,8 +1,8 @@
 const { Model } = require('objection');
 
-class User extends Model {
+class Users extends Model {
     static get tableName() {
-        return 'user';
+        return 'users';
     }
     static get relationMappings(){
         return {
@@ -10,7 +10,7 @@ class User extends Model {
                 relation: Model.OneToManyRelation,
                 modelClass: __dirname + '/Payment',
                 join: {
-                    from: 'user.user_id',
+                    from: 'users.user_id',
                     to: 'payment.user_id'
                 }
             }
@@ -18,4 +18,4 @@ class User extends Model {
     }
 }
 
-module.exports = User;
+module.exports = Users;

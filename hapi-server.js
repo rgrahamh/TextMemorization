@@ -3,12 +3,12 @@ const Boom = require('boom');
 const Lab = require('lab');
 const Code = require('code');
 const Joi = require('joi');
-const knex = require('knex');
+const knex = require('knex')(require('./knexfile.js').development);
 const server = new Hapi.Server();
 
 const Session = require('./Session.js');
 const Auth = require('./Auth.js');
-const User = require('./User.js');
+const Users = require('./Users.js');
 const Payment = require('./Payment.js');
 
 //Configure the port on which the server will listen
@@ -40,26 +40,34 @@ server.route([
                    ],
             validate: {
                 payload: {
-                    user: Joi.string().required().description('The username of the added user'),
-                    pass: Joi.string().required().description('The passord of the added user'),
-                    name: Joi.string().required().description('The user\'s full name'),
+                    last_name: Joi.string().required().description('The first name of the added user'),
+                    first_name: Joi.string().required().description('The last name of the added user'),
+                    middle_name: Joi.string().required().description('The user\'s middle name'),
+                    preferred_name: Joi.string().required().description('The preferred name of the added user'),
+                    login_name: Joi.string().required().description('The user\'s login name'),
                     email: Joi.string().required().description('The required email contact'),
-                    language: Joi.string().required().description('The preferred language of the user'),
-                    mail: Joi.string().required().description('The user\'s traditional mail address')
+                    preferred_language: Joi.string().required().description('The preferred language of the user'),
+                    address: Joi.string().required().description('The user\'s traditional mail address')
                 }
             }
         },
         handler: function(request, reply) {
-           knex('user').insert([
-               {
-                   user: request.payload.user,
-                   pass: request.payload.pass,
-                   name: request.payload.name,
-                   email: request.payload.email,
-                   language: request.payload.language,
-                   mail: request.payload.mail
-               }
-           ]);
+            console.log("Got here!");
+            knex('users').insert(
+                {
+                    last_name: request.payload.last_name,
+                    first_name: request.payload.first_name,
+                    middle_name: request.payload.middle_name,
+                    preferred_name: request.payload.preferred_name,
+                    login_name: request.payload.login_name,
+                    email: request.payload.email,
+                    preferred_language: request.payload.preferred_language,
+                    address: request.payload.address,
+                    is_registered: false
+                }
+            )
+            .then("Successfully inserted!")
+            .catch(err => reply(err))
         }
     },
     {

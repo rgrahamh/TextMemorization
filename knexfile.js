@@ -1,6 +1,6 @@
 module.exports = {
     development: {
-        client: 'postgresql',
+        client: 'pg',
         connection: {
             host: 'faraday.cse.taylor.edu',
             database: 'memex_2_a',

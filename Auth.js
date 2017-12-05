@@ -16,10 +16,10 @@ class Auth extends Model {
             },
             user: {
                 relation: Model.BelongsToOne,
-                modelClass: __dirname + '/User',
+                modelClass: __dirname + '/Users',
                 join: {
                     from: 'auth.login_name',
-                    to: 'user.login_name'
+                    to: 'users.login_name'
                 }
             }
         }
