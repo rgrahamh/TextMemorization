@@ -47,7 +47,8 @@ server.route([
                     login_name: Joi.string().required().description('The user\'s login name'),
                     email: Joi.string().required().description('The required email contact'),
                     preferred_language: Joi.string().required().description('The preferred language of the user'),
-                    address: Joi.string().required().description('The user\'s traditional mail address')
+                    address: Joi.string().required().description('The user\'s traditional mail address'),
+                    password: Joi.string().required().description('The user\'s password')
                 }
             }
         },
@@ -66,8 +67,16 @@ server.route([
                     is_registered: false
                 }
             )
-            .then("Successfully inserted!")
-            .catch(err => reply(err))
+            knex('auth').insert(
+                {
+                    login_name: request.payload.login_name,
+                    password: request.payload.password,
+                    num_unsuccessful_attempts: 0,
+                    num_successful_attempts: 0
+
+                }
+            )
+            .then("Successfully inserted!");
         }
     },
     {
@@ -118,7 +127,7 @@ server.route([
         }
     },
     {
-        method: 'PATCH',
+        method: 'PUT',
         path: '/reset-pass',
         config: {
             description: 'Resets a pass.',
@@ -135,7 +144,13 @@ server.route([
             }
         },
         handler: function(request, reply) {
-            //...
+            knex('auth')
+                .where('login_name', 'LIKE', request.params.user)
+                .andWhere('password', 'LIKE', request.params.oldPass)
+                .update({
+                    password: request.params.newPass
+                })
+            .then(reply("Updated"));
         }
     },
     {
