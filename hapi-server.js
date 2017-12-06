@@ -53,6 +53,19 @@ server.connection({port: 3000});
 server.route([
     {
         method: 'GET',
+        path: '/',
+        config: {
+            description: 'Account creation page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS registration page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                   ]
+        },
+        handler: function(request, reply){
+            reply.file('./page_files/login.html');
+        }
+    },
+    {
+        method: 'GET',
         path: '/make-account',
         config: {
             description: 'Account creation page',
