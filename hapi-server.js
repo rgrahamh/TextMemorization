@@ -66,7 +66,7 @@ server.route([
                     is_registered: false
                 }
             )
-            knex('auth').insert(
+            .then(knex('auth').insert(
                 {
                     login_name: request.payload.login_name,
                     password: request.payload.password,
@@ -74,7 +74,7 @@ server.route([
                     num_successful_attempts: 0
 
                 }
-            )
+            ))
             .then(reply({creation: "Successfully created!"}));
         }
     },
@@ -136,7 +136,7 @@ server.route([
                    ],
             validate: {
                 payload: {
-                    user: Joi.string().required().description('The username of the added user'),
+                    login_name: Joi.string().required().description('The username of the added user'),
                     oldPass: Joi.string().required().description('The passord of the added user'),
                     newPass: Joi.string().required().description('The user\'s full name'),
                 }
@@ -144,12 +144,12 @@ server.route([
         },
         handler: function(request, reply) {
             knex('auth')
-                .where('login_name', 'LIKE', request.params.user)
+                .where('login_name', 'LIKE', request.params.login_name)
                 .andWhere('password', 'LIKE', request.params.oldPass)
                 .update({
                     password: request.payload.newPass
                 })
-            .then(reply({updated: "Password updated!"}))
+            .then(reply({updated: "Password updated!"}));
         }
     },
     {
