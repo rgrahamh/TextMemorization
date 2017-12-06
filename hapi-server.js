@@ -4,15 +4,50 @@ const Lab = require('lab');
 const Code = require('code');
 const Joi = require('joi');
 const knex = require('knex')(require('./knexfile.js').development);
+const Bcrypt = require('bcrypt');
+const JWT = require('jsonwebtoken');
+
+
 const server = new Hapi.Server();
 
 const Session = require('./Session.js');
 const Auth = require('./Auth.js');
 const Users = require('./Users.js');
 const Payment = require('./Payment.js');
+const JWT_SECRET_KEY = require('./password.js')['jwtkey'];
+
+
+function createToken(userId) {
+    return JWT.sign(
+        {userId: userId},
+        JWT_SECRET_KEY,
+        {algorithm: 'HS256', expiresIn: "1d"}
+    );
+}
+
+function validateUser(decoded, request, callback) {
+   if (decoded.hasOwnProperty('userId')) {
+       User.query().findById(decoded.userId)
+       .then(user => {
+           if (user) {
+               callback(null, true);
+           } else {
+               callback(null, false);
+           }
+           })
+       .catch(err => callback(null, false));
+   } else {
+       callback(null, false);
+   }
+}
+
+
+
 
 //Configure the port on which the server will listen
 server.connection({port: 3000});
+
+
 
 //Define routes
 server.route([
@@ -26,7 +61,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            //...
+            reply("This is where you <em>should</em> be able to make an account");
         }
     },
     {
@@ -74,7 +109,7 @@ server.route([
                     num_successful_attempts: 0
 
                 }
-            ))
+            ).then(a => {} ))
             .then(reply({creation: "Successfully created!"}));
         }
     },
@@ -88,7 +123,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            //...
+            reply("This is where you <em>should</em> be able to login");
         }
     },
     {
@@ -112,9 +147,13 @@ server.route([
             //...
         }
     },
+   /* {
+        method: 'GET',
+        
+    },*/
     {
         method: 'GET',
-        path: '/reset-pass',
+        path: '/change-pass',
         config: {
             description: 'Password reset page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
@@ -122,12 +161,12 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            //...
+            reply("This is where you <em>should</em> be able to reset your password");
         }
     },
     {
         method: 'PUT',
-        path: '/reset-pass',
+        path: '/change-pass',
         config: {
             description: 'Resets a pass.',
             notes: ['If status code is 200: change password field for given record in the User table in the database.',
@@ -201,10 +240,18 @@ server.register([
     require('vision'),
     require('inert'),
     require('lout'),
+    require('hapi-auth-jwt2'),
 ], err => {
     if(err) {
         throw err;
     }
+
+    server.auth.strategy('webtoken', 'jwt', {
+        key: JWT_SECRET_KEY,
+        validateFunc: validateUser,
+        verifyOptions: {algorithms: ['HS256']}
+    });
+
     server.start(err => {
         if (err) {
             throw err
