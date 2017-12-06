@@ -55,7 +55,7 @@ server.route([
         method: 'GET',
         path: '/',
         config: {
-            description: 'Account creation page',
+            description: 'Home page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS registration page.',
                     'If status code is 404: return Boom.notFound("Page not found...")'
                    ]
@@ -160,28 +160,47 @@ server.route([
             //...
         }
     },
-   /* {
+    {
         method: 'GET',
-
-    },*/
+        path: '/reset-pass',
+        config: {
+            description: 'Password reset page',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")']
+        },
+        handler: funciton(request, reply{
+            //reply.file('./page_files/reset_pass.html');
+        }
+    },
+    {
+        method: 'PATCH',
+        path: '/reset-pass',
+        config: {
+            description: 'Resets a password',
+            notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")']
+        },
+        handler: funciton(request, reply{
+            //...
+        }
+    },
     {
         method: 'GET',
         path: '/change-pass',
         config: {
-            description: 'Password reset page',
+            description: 'Password changing page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
-                    'If status code is 404: return Boom.notFound("Page not found...")'
-                   ]
+                    'If status code is 404: return Boom.notFound("Page not found...")']
         },
         handler: function(request, reply){
-            reply.file('./page_files/reset_pass.html');
+            reply.file('./page_files/reset_pass.html');//Change to change_pass.html once the page is constructed
         }
     },
     {
         method: 'PUT',
         path: '/change-pass',
         config: {
-            description: 'Resets a pass.',
+            description: 'Changes a pass.',
             notes: ['If status code is 200: change password field for given record in the User table in the database.',
                     'If status code is 406: return Boom.notAcceptable("Current password incorrect...")',
                     'If status code is 404: return Boom.notFound("Page not found...")'
