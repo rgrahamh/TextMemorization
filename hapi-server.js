@@ -53,7 +53,6 @@ server.route([
             }
         },
         handler: function(request, reply) {
-            console.log("Got here!");
             knex('users').insert(
                 {
                     last_name: request.payload.last_name,
@@ -76,7 +75,7 @@ server.route([
 
                 }
             )
-            .then("Successfully inserted!");
+            .then(reply({creation: "Successfully created!"}));
         }
     },
     {
@@ -148,9 +147,9 @@ server.route([
                 .where('login_name', 'LIKE', request.params.user)
                 .andWhere('password', 'LIKE', request.params.oldPass)
                 .update({
-                    password: request.params.newPass
+                    password: request.payload.newPass
                 })
-            .then(reply("Updated"));
+            .then(reply({updated: "Password updated!"}))
         }
     },
     {
@@ -178,12 +177,22 @@ server.route([
                    ],
             validate: {
                 payload: {
-                    user: Joi.number().integer().min(0).required().description('The user id  of the user making the purchase')
+                    user_id: Joi.number().integer().min(0).required().description('The user id  of the user making the purchase')
                 }
             }
         },
         handler: function(request, reply) {
-            //...
+            const d = new Date(); //The current date
+            const subscriptionCost = 4.99; //Change this number if you change the cost of a subscription
+            knex('payment').insert(
+                {
+                    user_id: request.payload.user_id,
+                    date: d,
+                    cost: subscriptionCost,
+                    paid: true //Figure out a way to validate later
+                }
+            )
+            .then(reply({payment: "Complete!"}))
         }
     }
 ]);

@@ -37,5 +37,4 @@ exports.down = function(knex, Promise) {
         .then(() => knex.schema.dropTable('auth'))
         .then(() => knex.schema.dropTable('users'))
         .then(() => knex.schema.dropTable('payment'));
-
 };
