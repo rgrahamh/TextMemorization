@@ -168,7 +168,7 @@ server.route([
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
                     'If status code is 404: return Boom.notFound("Page not found...")']
         },
-        handler: funciton(request, reply{
+        handler: function(request, reply){
             //reply.file('./page_files/reset_pass.html');
         }
     },
@@ -180,7 +180,7 @@ server.route([
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
                     'If status code is 404: return Boom.notFound("Page not found...")']
         },
-        handler: funciton(request, reply{
+        handler: function(request, reply){
             //...
         }
     },
@@ -215,11 +215,9 @@ server.route([
         },
         handler: function(request, reply) {
             knex('auth')
-                .where('login_name', 'LIKE', request.params.login_name)
-                .andWhere('password', 'LIKE', request.params.oldPass)
-                .update({
-                    password: request.payload.newPass
-                })
+                .where('login_name', 'LIKE', request.payload.login_name)
+                .andWhere('password', request.payload.oldPass)
+                .update('password', request.payload.newPass)
             .then(reply({updated: "Password updated!"}));
         }
     },
