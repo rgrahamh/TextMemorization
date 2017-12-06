@@ -70,7 +70,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to make an account");
+            reply.file('./page_files/make_account.html');
         }
     },
     {
@@ -132,7 +132,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to login");
+            reply.file('./page_files/login.html');
         }
     },
     {
@@ -158,6 +158,7 @@ server.route([
     },
     {
         method: 'GET',
+<<<<<<< HEAD
         path: '/reset-pass',
         config: {
             description: 'Password reset page',
@@ -182,6 +183,10 @@ server.route([
             reply('This is where you <em>should</em> be able to reset your password');
         }
     },
+=======
+
+    },*/
+>>>>>>> 5be8a52f16f52f047fbcc6de241036c09f3937e4
     {
         method: 'GET',
         path: '/change-pass',
@@ -191,7 +196,11 @@ server.route([
                     'If status code is 404: return Boom.notFound("Page not found...")']
         },
         handler: function(request, reply){
+<<<<<<< HEAD
             reply('This is where you <em>should</em> be able to reset your password');
+=======
+            reply.file('./page_files/reset_pass.html');
+>>>>>>> 5be8a52f16f52f047fbcc6de241036c09f3937e4
         }
     },
     {
@@ -231,7 +240,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            //...
+            reply.file('./page_files/purchase.html');
         }
     },
     {
