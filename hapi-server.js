@@ -7,7 +7,6 @@ const knex = require('knex')(require('./knexfile.js').development);
 const Bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 
-
 const server = new Hapi.Server();
 
 const Session = require('./Session.js');
@@ -51,6 +50,16 @@ server.connection({port: 3000});
 
 //Define routes
 server.route([
+    {
+        method: 'GET',
+        path: '/',
+        config: {
+            description: 'Redirects to login',
+        },
+        handler: function(request, reply){
+            reply.file('./page_files/login.html');
+        }
+    },
     {
         method: 'GET',
         path: '/make-account',
@@ -147,21 +156,42 @@ server.route([
             //...
         }
     },
-   /* {
+    {
         method: 'GET',
-        
-    },*/
+        path: '/reset-pass',
+        config: {
+            description: 'Password reset page',
+            notes: ['If  status code is 200: return payload of HTML/CSS/JS password reset page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")']
+
+        },
+        handler: function(request, reply){
+            reply('This is where you <em>should</em> be able to reset your password');
+        }
+    },
+    {
+        method: 'PATCH',
+        path: '/reset-pass',
+        config: {
+            description: 'Password reset page',
+            notes: ['If  status code is 200: return payload of HTML/CSS/JS password reset page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")']
+
+        },
+        handler: function(request, reply){
+            reply('This is where you <em>should</em> be able to reset your password');
+        }
+    },
     {
         method: 'GET',
         path: '/change-pass',
         config: {
             description: 'Password reset page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
-                    'If status code is 404: return Boom.notFound("Page not found...")'
-                   ]
+                    'If status code is 404: return Boom.notFound("Page not found...")']
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to reset your password");
+            reply('This is where you <em>should</em> be able to reset your password');
         }
     },
     {
