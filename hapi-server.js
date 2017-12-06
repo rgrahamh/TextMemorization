@@ -61,7 +61,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to make an account");
+            reply.file('./page_files/make_account.html');
         }
     },
     {
@@ -123,7 +123,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to login");
+            reply.file('./page_files/login.html');
         }
     },
     {
@@ -149,7 +149,7 @@ server.route([
     },
    /* {
         method: 'GET',
-        
+
     },*/
     {
         method: 'GET',
@@ -161,7 +161,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            reply("This is where you <em>should</em> be able to reset your password");
+            reply.file('./page_files/reset_pass.html');
         }
     },
     {
@@ -201,7 +201,7 @@ server.route([
                    ]
         },
         handler: function(request, reply){
-            //...
+            reply.file('./page_files/purchase.html');
         }
     },
     {
