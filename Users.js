@@ -10,8 +10,8 @@ class Users extends Model {
                 relation: Model.OneToManyRelation,
                 modelClass: __dirname + '/Payment',
                 join: {
-                    from: 'users.user_id',
-                    to: 'payment.user_id'
+                    from: 'users.login_name',
+                    to: 'payment.login_name'
                 }
             }
         }
