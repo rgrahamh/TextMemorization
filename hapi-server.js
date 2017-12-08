@@ -14,9 +14,21 @@ const Session = require('./Session.js');
 const Auth = require('./Auth.js');
 const Users = require('./Users.js');
 const Payment = require('./Payment.js');
-const JWT_SECRET_KEY = require('./password.js')['jwtkey'];
+const JWT_SECRET_KEY = "test-key";//require('./password.js')['jwtkey'];
 
 
+//bcrypt password
+function checkPassword(plaintextPass, hashedPass) {
+  return Bcrypt.compare(plaintextPass, hashedPass);
+}
+
+function hashPassword(plaintextPass) {
+  return Bcrypt.hash(plaintextPass, 10);
+}
+
+
+
+// auth
 function createToken(userId) {
     return JWT.sign(
         {userId: userId},
@@ -49,6 +61,22 @@ server.connection({port: 3000});
 
 
 
+server.register([
+    require('vision'),
+    require('inert'),
+    require('lout'),
+    require('hapi-auth-jwt2'),
+], err => {
+    if(err) {
+        throw err;
+    }
+
+    server.auth.strategy('webtoken', 'jwt', {
+        key: JWT_SECRET_KEY,
+        validateFunc: validateUser,
+        verifyOptions: {algorithms: ['HS256']}
+    });
+
 //Define routes
 server.route([
     {
@@ -78,7 +106,7 @@ server.route([
         }
     },
     {
-        method: 'PUT',
+        method: 'POST',
         path: '/make-account',
         config: {
             description: 'Creates an account.',
@@ -114,15 +142,16 @@ server.route([
                     is_registered: false
                 }
             )
-            .then(knex('auth').insert(
+            .then(hashPassword(request.payload.password).then(hashPassword => {
+              knex('auth').insert(
                 {
                     login_name: request.payload.login_name,
-                    password: request.payload.password,
+                    password: hashPassword,
                     num_unsuccessful_attempts: 0,
                     num_successful_attempts: 0
 
                 }
-            ).then(a => {} ))
+            ).then(a => {} )}))
             .then(reply({creation: "Successfully created!"}));
         }
     },
@@ -157,7 +186,25 @@ server.route([
             }
         },
         handler: function(request, reply) {
-            //...
+          let userId = request.payload.user;
+          Auth.query()
+            .where('login_name', userId)
+            .first()
+            .then(user => {
+              if (!user) {
+                reply(Boom.notFound("No User Found"));
+              } else {
+                checkPassword(request.payload.pass, user.password)
+                  .then(isValid => {
+                    if (isValid) {
+                      reply({ jwtIdToken: createToken(userId) });
+                    } else {
+                      reply(Boom.unauthorized('Authentication failed'));
+                    }
+                });
+              }
+            })
+
         }
     },
     {
@@ -190,7 +237,8 @@ server.route([
         config: {
             description: 'Password changing page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS password reset page.',
-                    'If status code is 404: return Boom.notFound("Page not found...")']
+                    'If status code is 404: return Boom.notFound("Page not found...")'],
+            auth: { strategy: 'webtoken' }
         },
         handler: function(request, reply){
             reply.file('./page_files/reset_pass.html');//Change to change_pass.html once the page is constructed
@@ -205,6 +253,7 @@ server.route([
                     'If status code is 406: return Boom.notAcceptable("Current password incorrect...")',
                     'If status code is 404: return Boom.notFound("Page not found...")'
                    ],
+            auth: { strategy: 'webtoken' },
             validate: {
                 payload: {
                     login_name: Joi.string().required().description('The username of the added user'),
@@ -228,7 +277,8 @@ server.route([
             description: 'Subscription purchase page',
             notes: ['If status code is 200: return payload of HTML/CSS/JS subscription purchase page.',
                     'If status code is 404: return Boom.notFound("Page not found...")'
-                   ]
+                  ],
+            auth: { strategy: 'webtoken' }
         },
         handler: function(request, reply){
             reply.file('./page_files/purchase.html');
@@ -244,6 +294,7 @@ server.route([
                     'If status code is 409: return Boom.conflict("User already has a subscription...")',
                     'If status code is 404: return Boom.notFound("Page not found...")'
                    ],
+            auth: { strategy: 'webtoken' },
             validate: {
                 payload: {
                     user_id: Joi.number().integer().min(0).required().description('The user id  of the user making the purchase')
@@ -266,21 +317,7 @@ server.route([
     }
 ]);
 
-server.register([
-    require('vision'),
-    require('inert'),
-    require('lout'),
-    require('hapi-auth-jwt2'),
-], err => {
-    if(err) {
-        throw err;
-    }
 
-    server.auth.strategy('webtoken', 'jwt', {
-        key: JWT_SECRET_KEY,
-        validateFunc: validateUser,
-        verifyOptions: {algorithms: ['HS256']}
-    });
 
     server.start(err => {
         if (err) {

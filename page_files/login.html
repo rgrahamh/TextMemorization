@@ -8,7 +8,7 @@
 
 <body>
   <h1>Login</h1>
-  <form>
+  <form action="/login" method="post">
     User
     <input type="text" name="user"><br>
     Pass
@@ -20,10 +20,10 @@
   <button type="button" id="createAccount">Create Account</button>
   <script>
     document.getElementById("passReset").onclick = function() {
-      window.location.href = "reset_pass.html";
+      window.location.href = "change-pass";
     }
     document.getElementById("createAccount").onclick = function() {
-      window.location.href = "make_account.html";
+      window.location.href = "make-account";
     }
   </script>
 </body>
