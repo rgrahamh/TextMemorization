@@ -307,7 +307,7 @@ server.register([
         }
     ]);
 
-
+    module.exports = server;
 
     server.start(err => {
         if (err) {
