@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('language', lang => {
-        lang.increments('lanuage_id');
+        lang.increments('language_id');
         lang.string('language_name').unique().notNull();
     })
         .then(() => knex.schema.alterTable('users', users => {
