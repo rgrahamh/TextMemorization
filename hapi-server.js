@@ -296,17 +296,23 @@ server.register([
                     .where('login_name', 'LIKE', request.payload.login_name)
                     .first()
                     .then(row => {
-                        if (row && checkPassword(request.payload.password, row.password)){
-                             Users.query()
-                                .where('login_name', 'LIKE', request.payload.login_name)
-                                .andWhere('password', request.payload.oldPass)
-                                .update('password', request.payload.newPass)
-                                .then(reply({ updated: "Password updated!" }));
+                        if (row && row.password){
+                            checkPassword(request.payload.oldPass, row.password).then(valid => {
+                                if (valid){
+                                    hashPassword(request.payload.newPass).then(hashedPass => {
+                                        knex('users')
+                                        .update('password', hashedPass)
+                                        .where('login_name', 'LIKE', request.payload.login_name)
+                                        .then(reply({ updated: "Password updated!" }));
+                                    })
+                                } else {
+                                    reply('error 1');
+                                }
+                            })
                         } else {
                             reply(Boom.notAcceptable("Invalid username or password"));
                         }
                     })
-                    
             }
         },
         {
