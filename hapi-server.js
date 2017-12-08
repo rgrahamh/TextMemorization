@@ -40,28 +40,14 @@ function createToken(userId) {
 
 //Inserts a language; language must be a string
 function insertLanguage(lang) {
-    Language.query()
-        .then(langIter => {
-            langIter.forEach(i => {
-                var insert = true;
-                if(i == lang){
-                    insert = false;
-                }
-                if(insert){
-                    knex('language').insert({language_name: lang})
-                    .catch(err => {});
-                }
-                else{
-                    console.log(lang + ' is already in the table.');
-                }
-            })
-        })
-        .catch(err => {});
+    knex('language').insert({ language_name: lang })
+        .catch(err => { });
 }
 
 function validateUser(decoded, request, callback) {
     if (decoded.hasOwnProperty('userId')) {
-        User.query().findById(decoded.userId)
+        Users.query()
+            .where('login_name', decoded.userId)
             .then(user => {
                 if (user) {
                     callback(null, true);
@@ -149,32 +135,54 @@ server.register([
                 }
             },
             handler: function (request, reply) {
-                Language.query()
-                    .where('language_name', 'like', request.payload.preferred_language)
-                    .first()
-                    .then(language => {
-                        if (!language) {
-                            reply("Invalid language");
+                Users.query()
+                    .where('login_name', request.payload.login_name)
+                    .count()
+                    .then(rows => {
+                        console.log(rows);
+                        if (!rows || rows.count != '0') {
+                            reply(Boom.forbidden('Username taken'))
                         } else {
-                            knex('users').insert(
-                                {
-                                    last_name: request.payload.last_name,
-                                    first_name: request.payload.first_name,
-                                    middle_name: request.payload.middle_name,
-                                    preferred_name: request.payload.preferred_name,
-                                    login_name: request.payload.login_name,
-                                    email: request.payload.email,
-                                    language_id: language['language_id'],
-                                    address: request.payload.address,
-                                    registered_until: Date.now(),
-                                    password: hashPassword,
-                                    num_successful_login_attempts: 0,
-                                    num_unsuccessful_login_attempts: 0,
-                                }
-                            )
-                                .then(reply({ creation: "Successfully created!" }));
+                            Language.query()
+                                .where('language_name', 'like', request.payload.preferred_language)
+                                .first()
+                                .then(language => {
+                                    console.log(language);
+                                    if (!language) {
+                                        reply(Boom.forbidden('Invalid language'))
+                                    } else {
+                                        hashPassword(request.payload.password)
+                                            .then(hashedPass => {
+                                                var now = new Date();
+                                                knex('users')
+                                                    .insert(
+                                                    {
+                                                        last_name: request.payload.last_name,
+                                                        first_name: request.payload.first_name,
+                                                        middle_name: request.payload.middle_name,
+                                                        preferred_name: request.payload.preferred_name,
+                                                        login_name: request.payload.login_name,
+                                                        email: request.payload.email,
+                                                        language_id: language['language_id'],
+                                                        address: request.payload.address,
+                                                        registered_until: now.toISOString(),
+                                                        password: hashedPass,
+                                                        num_successful_login_attempts: 0,
+                                                        num_unsuccessful_login_attempts: 0,
+                                                    }
+                                                    ).then(reply({ creation: "Successfully created!" }))
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                        console.log("bad");
+                                                    });
+
+                                            })
+
+                                    }
+                                })
                         }
                     })
+
             }
         },
         {
@@ -208,7 +216,7 @@ server.register([
             },
             handler: function (request, reply) {
                 let userId = request.payload.user;
-                Auth.query()
+                Users.query()
                     .where('login_name', userId)
                     .first()
                     .then(user => {
@@ -237,9 +245,9 @@ server.register([
                     'If status code is 404: return Boom.notFound("Page not found...")']
             },
             handler: function (request, reply) {
-                //reply.file('./page_files/reset_pass.html');
+                reply("Contact a system administrator to recover your lost password");
             }
-        },
+        },/*
         {
             method: 'PATCH',
             path: '/reset-pass',
@@ -251,7 +259,7 @@ server.register([
             handler: function (request, reply) {
                 //...
             }
-        },
+        },*/
         {
             method: 'GET',
             path: '/change-pass',
@@ -269,7 +277,7 @@ server.register([
             method: 'PUT',
             path: '/change-pass',
             config: {
-                description: 'Changes a pass.',
+                description: 'Changes a password.',
                 notes: ['If status code is 200: change password field for given record in the User table in the database.',
                     'If status code is 406: return Boom.notAcceptable("Current password incorrect...")',
                     'If status code is 404: return Boom.notFound("Page not found...")'
@@ -278,17 +286,33 @@ server.register([
                 validate: {
                     payload: {
                         login_name: Joi.string().required().description('The username of the added user'),
-                        oldPass: Joi.string().required().description('The passord of the added user'),
-                        newPass: Joi.string().required().description('The user\'s full name'),
+                        oldPass: Joi.string().required().description('The password of the added user'),
+                        newPass: Joi.string().required().description('The user\'s new password'),
                     }
                 }
             },
             handler: function (request, reply) {
-                knex('auth')
+                Users.query()
                     .where('login_name', 'LIKE', request.payload.login_name)
-                    .andWhere('password', request.payload.oldPass)
-                    .update('password', request.payload.newPass)
-                    .then(reply({ updated: "Password updated!" }));
+                    .first()
+                    .then(row => {
+                        if (row && row.password){
+                            checkPassword(request.payload.oldPass, row.password).then(valid => {
+                                if (valid){
+                                    hashPassword(request.payload.newPass).then(hashedPass => {
+                                        knex('users')
+                                        .update('password', hashedPass)
+                                        .where('login_name', 'LIKE', request.payload.login_name)
+                                        .then(reply({ updated: "Password updated!" }));
+                                    })
+                                } else {
+                                    reply('error 1');
+                                }
+                            })
+                        } else {
+                            reply(Boom.notAcceptable("Invalid username or password"));
+                        }
+                    })
             }
         },
         {
@@ -333,7 +357,8 @@ server.register([
                         paid: true //Figure out a way to validate later
                     }
                 )
-                    .then(reply({ payment: "Complete!" }))
+                    .then(() => knex('users').update({registered_until: new Date(d.getYear()+1, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())}))
+                    .then(() => reply({ payment: "Complete!" }));
             }
         },
         {
@@ -357,6 +382,13 @@ server.register([
         if (err) {
             throw err
         }
+        knex('language').insert({ language_name: 'English' })
+            .then(() => knex('language').insert({ language_name: 'Spanish' }))
+            .then(() => knex('language').insert({ language_name: 'German' }))
+            .then(() => knex('language').insert({ language_name: 'Chinese' }))
+            .then(() => knex('language').insert({ language_name: '\'Merican' }))
+            .then(() => { })
+            .catch(err => { });
         insertLanguage('English');
         insertLanguage('Spanish');
         insertLanguage('German');

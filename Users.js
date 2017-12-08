@@ -14,7 +14,7 @@ class Users extends Model {
                     to: 'payment.login_name'
                 }
             }
-        }
+        };
     }
 }
 
