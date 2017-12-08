@@ -154,7 +154,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -169,7 +169,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -183,7 +183,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -197,7 +197,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -211,7 +211,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -237,7 +237,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
@@ -249,7 +249,7 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.statusCode)).to.equal(400);
+                            expect(JSON.parse(response.statusCode)).to.equal(401);
                             done();
                         });
     });
