@@ -18,4 +18,4 @@ class Language extends Model {
     }
 }
 
-module.exports = Language;
+module.exports = { Language };

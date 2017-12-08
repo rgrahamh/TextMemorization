@@ -12,9 +12,9 @@ Model.knex(knex);
 
 const server = new Hapi.Server();
 
-const Language = require('./Language.js');
-const Users = require('./Users.js');
-const Payment = require('./Payment.js');
+const { Language } = require('./Language.js');
+const { Users } = require('./Users.js');
+const { Payment } = require('./Payment.js');
 const JWT_SECRET_KEY = "test-key";//require('./password.js')['jwtkey'];
 
 
@@ -153,8 +153,8 @@ server.register([
                                     address: request.payload.address,
                                     registered_until: Date.now(),
                                     password: hashPassword,
-                                    num_succesful_login_attempts: 0,
-                                    num_unsuccesful_login_attempts: 0,
+                                    num_successful_login_attempts: 0,
+                                    num_unsuccessful_login_attempts: 0,
                                 }
                             )
                                 .then(reply({ creation: "Successfully created!" }));

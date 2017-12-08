@@ -18,4 +18,4 @@ class Payment extends Model {
     }
 }
 
-module.exports = Payment;
+module.exports = { Payment };
