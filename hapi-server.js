@@ -166,12 +166,11 @@ server.register([
                 notes: ['If status code is 200: Creates a new session.',
                     'If status code is 401: return Boom.unauthorized("Incorrect password")',
                     'If status code is 404: return Boom.notFound("Page not found...")',
-                    'We\'re honestly not sure if we need this route or not. We will know once we learn about user authentication!'
                 ],
                 validate: {
                     payload: {
                         user: Joi.string().required().description('The username of the user'),
-                        pass: Joi.string().required().description('The passord of the user'),
+                        pass: Joi.string().required().description('The password of the user'),
                     }
                 }
             },
