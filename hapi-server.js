@@ -46,7 +46,7 @@ function insertLanguage(lang) {
 
 function validateUser(decoded, request, callback) {
     if (decoded.hasOwnProperty('userId')) {
-        User.query().findById(decoded.userId)
+        Users.query().findById(decoded.userId)
             .then(user => {
                 if (user) {
                     callback(null, true);
