@@ -10,8 +10,7 @@ const JWT = require('jsonwebtoken');
 
 const server = new Hapi.Server();
 
-const Session = require('./Session.js');
-const Auth = require('./Auth.js');
+
 const Users = require('./Users.js');
 const Payment = require('./Payment.js');
 const JWT_SECRET_KEY = "test-key";//require('./password.js')['jwtkey'];
@@ -54,8 +53,6 @@ function validateUser(decoded, request, callback) {
 }
 
 
-
-
 //Configure the port on which the server will listen
 server.connection({ port: 3000 });
 
@@ -89,7 +86,7 @@ server.register([
                 ]
             },
             handler: function (request, reply) {
-                reply.file('./page_files/login.html');
+                reply.redirect('/login');
             }
         },
         {
@@ -139,20 +136,12 @@ server.register([
                         email: request.payload.email,
                         preferred_language: request.payload.preferred_language,
                         address: request.payload.address,
-                        is_registered: false
+                        registered_until: Date.now(),
+                        password: hashPassword,
+                        num_succesful_login_attempts: 0,
+                        num_unsuccesful_login_attempts: 0,
                     }
                 )
-                    .then(hashPassword(request.payload.password).then(hashPassword => {
-                        knex('auth').insert(
-                            {
-                                login_name: request.payload.login_name,
-                                password: hashPassword,
-                                num_unsuccessful_attempts: 0,
-                                num_successful_attempts: 0
-
-                            }
-                        ).then(a => { })
-                    }))
                     .then(reply({ creation: "Successfully created!" }));
             }
         },
