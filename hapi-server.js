@@ -342,7 +342,7 @@ server.register([
                 auth: { strategy: 'webtoken' },
                 validate: {
                     payload: {
-                        user_id: Joi.number().integer().min(0).required().description('The user id  of the user making the purchase')
+                        user_id: Joi.string().min(0).required().description('The username of the user making the purchase')
                     }
                 }
             },
@@ -351,13 +351,13 @@ server.register([
                 const subscriptionCost = 4.99; //Change this number if you change the cost of a subscription
                 knex('payment').insert(
                     {
-                        user_id: request.payload.user_id,
+                        login_name: request.payload.user_id,
                         date: d,
                         cost: subscriptionCost,
                         paid: true //Figure out a way to validate later
                     }
                 )
-                    .then(() => knex('users').update({registered_until: new Date(d.getYear()+1, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())}))
+                    .then(() => knex('users').update({registered_until: new Date(d.getYear()+1901, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())}))
                     .then(() => reply({ payment: "Complete!" }));
             }
         },
