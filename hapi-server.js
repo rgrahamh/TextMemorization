@@ -353,7 +353,6 @@ server.register([
         if (err) {
             throw err
         }
-<<<<<<< HEAD
         knex('language').insert({ language_name: 'English' })
             .then(() => knex('language').insert({ language_name: 'Spanish' }))
             .then(() => knex('language').insert({ language_name: 'German' }))
@@ -361,14 +360,12 @@ server.register([
             .then(() => knex('language').insert({ language_name: '\'Merican' }))
             .then(() => { })
             .catch(err => { });
-=======
         insertLanguage('English');
         insertLanguage('Spanish');
         insertLanguage('German');
         insertLanguage('Chinese');
         insertLanguage('\'Merican');
         insertLanguage('Pig Latin');
->>>>>>> 294e38d1cf0d2b4007218d6cefaa286f11eec063
         console.log('Server running at', server.info.uri);
     });
 });
