@@ -139,7 +139,8 @@ server.register([
                     .where('login_name', request.payload.login_name)
                     .count()
                     .then(rows => {
-                        if (rows > 0) {
+                        console.log(rows);
+                        if (!rows || rows.count != '0') {
                             reply("Username taken")
                         } else {
                             Language.query()
@@ -244,9 +245,9 @@ server.register([
                     'If status code is 404: return Boom.notFound("Page not found...")']
             },
             handler: function (request, reply) {
-                //reply.file('./page_files/reset_pass.html');
+                reply("Contact a system administrator to recover your lost password");
             }
-        },
+        },/*
         {
             method: 'PATCH',
             path: '/reset-pass',
@@ -258,7 +259,7 @@ server.register([
             handler: function (request, reply) {
                 //...
             }
-        },
+        },*/
         {
             method: 'GET',
             path: '/change-pass',
@@ -276,7 +277,7 @@ server.register([
             method: 'PUT',
             path: '/change-pass',
             config: {
-                description: 'Changes a pass.',
+                description: 'Changes a password.',
                 notes: ['If status code is 200: change password field for given record in the User table in the database.',
                     'If status code is 406: return Boom.notAcceptable("Current password incorrect...")',
                     'If status code is 404: return Boom.notFound("Page not found...")'
@@ -285,17 +286,27 @@ server.register([
                 validate: {
                     payload: {
                         login_name: Joi.string().required().description('The username of the added user'),
-                        oldPass: Joi.string().required().description('The passord of the added user'),
-                        newPass: Joi.string().required().description('The user\'s full name'),
+                        oldPass: Joi.string().required().description('The password of the added user'),
+                        newPass: Joi.string().required().description('The user\'s new password'),
                     }
                 }
             },
             handler: function (request, reply) {
-                knex('auth')
+                Users.query()
                     .where('login_name', 'LIKE', request.payload.login_name)
-                    .andWhere('password', request.payload.oldPass)
-                    .update('password', request.payload.newPass)
-                    .then(reply({ updated: "Password updated!" }));
+                    .first()
+                    .then(row => {
+                        if (row && checkPassword(request.payload.password, row.password)){
+                             Users.query()
+                                .where('login_name', 'LIKE', request.payload.login_name)
+                                .andWhere('password', request.payload.oldPass)
+                                .update('password', request.payload.newPass)
+                                .then(reply({ updated: "Password updated!" }));
+                        } else {
+                            reply("Invalid username or password");
+                        }
+                    })
+                    
             }
         },
         {
