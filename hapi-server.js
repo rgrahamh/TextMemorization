@@ -132,26 +132,37 @@ server.register([
                     .where('language_name', 'like', request.payload.preferred_language)
                     .first()
                     .then(language => {
+                        console.log(language);
                         if (!language) {
                             reply("Invalid language");
                         } else {
-                            knex('users').insert(
-                                {
-                                    last_name: request.payload.last_name,
-                                    first_name: request.payload.first_name,
-                                    middle_name: request.payload.middle_name,
-                                    preferred_name: request.payload.preferred_name,
-                                    login_name: request.payload.login_name,
-                                    email: request.payload.email,
-                                    language_id: language['language_id'],
-                                    address: request.payload.address,
-                                    registered_until: Date.now(),
-                                    password: hashPassword,
-                                    num_successful_login_attempts: 0,
-                                    num_unsuccessful_login_attempts: 0,
-                                }
-                            )
-                                .then(reply({ creation: "Successfully created!" }));
+                            hashPassword(request.payload.password)
+                                .then(hashedPass => {
+                                    var now = new Date();
+                                    knex('users')
+                                    .insert(
+                                    {
+                                        last_name: request.payload.last_name,
+                                        first_name: request.payload.first_name,
+                                        middle_name: request.payload.middle_name,
+                                        preferred_name: request.payload.preferred_name,
+                                        login_name: request.payload.login_name,
+                                        email: request.payload.email,
+                                        language_id: language['language_id'],
+                                        address: request.payload.address,
+                                        registered_until: now.toISOString(),
+                                        password: hashedPass,
+                                        num_successful_login_attempts: 0,
+                                        num_unsuccessful_login_attempts: 0,
+                                    }
+                                    ).then(reply({ creation: "Successfully created!"}))
+                                    .catch(error => {
+                                        console.error(error);
+                                        console.log("bad");
+                                    });
+                                    
+                                })
+
                         }
                     })
             }
@@ -187,7 +198,7 @@ server.register([
             },
             handler: function (request, reply) {
                 let userId = request.payload.user;
-                Auth.query()
+                Users.query()
                     .where('login_name', userId)
                     .first()
                     .then(user => {
@@ -336,13 +347,13 @@ server.register([
         if (err) {
             throw err
         }
-        knex('language').insert({language_name: 'English'})
-            .then(() => knex('language').insert({language_name: 'Spanish'}))
-            .then(() => knex('language').insert({language_name: 'German'}))
-            .then(() => knex('language').insert({language_name: 'Chinese'}))
-            .then(() => knex('language').insert({language_name: '\'Merican'}))
-            .then(() => {})
-            .catch(err => {});
+        knex('language').insert({ language_name: 'English' })
+            .then(() => knex('language').insert({ language_name: 'Spanish' }))
+            .then(() => knex('language').insert({ language_name: 'German' }))
+            .then(() => knex('language').insert({ language_name: 'Chinese' }))
+            .then(() => knex('language').insert({ language_name: '\'Merican' }))
+            .then(() => { })
+            .catch(err => { });
         console.log('Server running at', server.info.uri);
     });
 });

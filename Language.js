@@ -4,7 +4,7 @@ class Language extends Model {
     static get tableName() {
         return 'language';
     }
-    static get relationMappings(){
+    static get relationMappings() {
         return {
             payment: {
                 relation: Model.OneToManyRelation,
@@ -14,8 +14,8 @@ class Language extends Model {
                     to: 'language.language_id'
                 }
             }
-        }
+        };
     }
 }
-
+ 
 module.exports = { Language };
