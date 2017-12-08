@@ -7,10 +7,12 @@ const knex = require('knex')(require('./knexfile.js').development);
 const Bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 
+const { Model } = require('objection');
+Model.knex(knex);
 
 const server = new Hapi.Server();
 
-
+const Language = require('./Language.js');
 const Users = require('./Users.js');
 const Payment = require('./Payment.js');
 const JWT_SECRET_KEY = "test-key";//require('./password.js')['jwtkey'];
@@ -126,11 +128,11 @@ server.register([
                 }
             },
             handler: function (request, reply) {
-                knex('language').query('id')
-                    .where('name', 'like', request.payload.preferred_language)
+                Language.query()
+                    .where('language_name', 'like', request.payload.preferred_language)
                     .first()
-                    .then(language_id => {
-                        if (!language_id) {
+                    .then(language => {
+                        if (!language) {
                             reply("Invalid language");
                         } else {
                             knex('users').insert(
@@ -141,7 +143,7 @@ server.register([
                                     preferred_name: request.payload.preferred_name,
                                     login_name: request.payload.login_name,
                                     email: request.payload.email,
-                                    language_id: language_id,
+                                    language_id: language['language_id'],
                                     address: request.payload.address,
                                     registered_until: Date.now(),
                                     password: hashPassword,
