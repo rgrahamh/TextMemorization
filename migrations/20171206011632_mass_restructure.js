@@ -16,14 +16,14 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
     return knex.schema.createTable('session', table => {
-        table.increments('login_id').notNull();
-        table.dateTime('last_request_time').notNull();
+        table.increments('login_id');
+        table.dateTime('last_request_time');
     })
     .then(() => knex.schema.alterTable('auth', auth => {
         auth.dropPrimary();
     }))
     .then(() => knex.schema.alterTable('auth', auth => {
-        auth.increments('login_id').notNull();
+        auth.increments('login_id');
     }))
     .then(() => knex.schema.alterTable('users', users => {
         users.dropPrimary()
@@ -32,7 +32,7 @@ exports.down = function(knex, Promise) {
         users.increments('user_id').primary();
     }))
     .then(() => knex.schema.alterTable('payment', pay => {
-        pay.integer('user_id').notNull();
+        pay.integer('user_id');
         pay.dropColumn('login_name');
     }));
 };

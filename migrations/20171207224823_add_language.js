@@ -13,6 +13,6 @@ exports.down = function(knex, Promise) {
     return knex.schema.dropTable('language')
         .then(() => knex.schema.alterTable('users', users => {
             users.dropColumn('language_id');
-            users.string('preferred_language').notNull();
+            users.string('preferred_language');
         }));
 };

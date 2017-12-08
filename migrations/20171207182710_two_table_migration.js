@@ -20,6 +20,6 @@ exports.down = function(knex, Promise) {
         users.dropColumn('password');
         users.dropColumn('num_successful_login_attempts');
         users.dropColumn('num_unsuccessful_login_attempts');
-        users.boolean('is_registered').notNull();
+        users.boolean('is_registered');
     }));
 };
