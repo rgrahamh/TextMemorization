@@ -141,7 +141,7 @@ server.register([
                     .then(rows => {
                         console.log(rows);
                         if (!rows || rows.count != '0') {
-                            reply("Username taken")
+                            reply(Boom.forbidden('Username taken'))
                         } else {
                             Language.query()
                                 .where('language_name', 'like', request.payload.preferred_language)
@@ -149,7 +149,7 @@ server.register([
                                 .then(language => {
                                     console.log(language);
                                     if (!language) {
-                                        reply("Invalid language");
+                                        reply(Boom.forbidden('Invalid language'))
                                     } else {
                                         hashPassword(request.payload.password)
                                             .then(hashedPass => {
@@ -303,7 +303,7 @@ server.register([
                                 .update('password', request.payload.newPass)
                                 .then(reply({ updated: "Password updated!" }));
                         } else {
-                            reply("Invalid username or password");
+                            reply(Boom.notAcceptable("Invalid username or password"));
                         }
                     })
                     
@@ -351,7 +351,8 @@ server.register([
                         paid: true //Figure out a way to validate later
                     }
                 )
-                    .then(reply({ payment: "Complete!" }))
+                    .then(() => knex('users').update({registered_until: new Date(d.getYear()+1, d.getMonth(), d.getDay(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds())}))
+                    .then(() => reply({ payment: "Complete!" }));
             }
         },
         {
