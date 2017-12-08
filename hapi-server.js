@@ -138,8 +138,10 @@ server.register([
                 Users.query()
                     .where('login_name', request.payload.login_name)
                     .count()
+                    .first()
                     .then(rows => {
-                        console.log(rows);
+                        // console.log(rows)
+                        // console.log(rows['count']);
                         if (!rows || rows.count != '0') {
                             reply(Boom.forbidden('Username taken'))
                         } else {
