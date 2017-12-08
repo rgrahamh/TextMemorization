@@ -126,23 +126,32 @@ server.register([
                 }
             },
             handler: function (request, reply) {
-                knex('users').insert(
-                    {
-                        last_name: request.payload.last_name,
-                        first_name: request.payload.first_name,
-                        middle_name: request.payload.middle_name,
-                        preferred_name: request.payload.preferred_name,
-                        login_name: request.payload.login_name,
-                        email: request.payload.email,
-                        preferred_language: request.payload.preferred_language,
-                        address: request.payload.address,
-                        registered_until: Date.now(),
-                        password: hashPassword,
-                        num_succesful_login_attempts: 0,
-                        num_unsuccesful_login_attempts: 0,
-                    }
-                )
-                    .then(reply({ creation: "Successfully created!" }));
+                knex('language').query('id')
+                    .where('name', 'like', request.payload.preferred_language)
+                    .first()
+                    .then(language_id => {
+                        if (!language_id) {
+                            reply("Invalid language");
+                        } else {
+                            knex('users').insert(
+                                {
+                                    last_name: request.payload.last_name,
+                                    first_name: request.payload.first_name,
+                                    middle_name: request.payload.middle_name,
+                                    preferred_name: request.payload.preferred_name,
+                                    login_name: request.payload.login_name,
+                                    email: request.payload.email,
+                                    language_id: language_id,
+                                    address: request.payload.address,
+                                    registered_until: Date.now(),
+                                    password: hashPassword,
+                                    num_succesful_login_attempts: 0,
+                                    num_unsuccesful_login_attempts: 0,
+                                }
+                            )
+                                .then(reply({ creation: "Successfully created!" }));
+                        }
+                    })
             }
         },
         {
@@ -303,7 +312,21 @@ server.register([
                 )
                     .then(reply({ payment: "Complete!" }))
             }
-        }
+        },
+        {
+            method: 'GET',
+            path: '/home',
+            config: {
+                description: 'Subscription purchase page',
+                notes: ['If status code is 200: return payload of HTML/CSS/JS subscription purchase page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                ],
+                auth: { strategy: 'webtoken' }
+            },
+            handler: function (request, reply) {
+                reply.file('./page_files/home.html');
+            }
+        },
     ]);
 
     module.exports = server;
