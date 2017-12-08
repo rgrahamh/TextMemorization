@@ -38,6 +38,27 @@ function createToken(userId) {
     );
 }
 
+//Inserts a language; language must be a string
+function insertLanguage(lang) {
+    Language.query()
+        .then(langIter => {
+            langIter.forEach(i => {
+                var insert = true;
+                if(i == lang){
+                    insert = false;
+                }
+                if(insert){
+                    knex('language').insert({language_name: lang})
+                    .catch(err => {});
+                }
+                else{
+                    console.log(lang + ' is already in the table.');
+                }
+            })
+        })
+        .catch(err => {});
+}
+
 function validateUser(decoded, request, callback) {
     if (decoded.hasOwnProperty('userId')) {
         User.query().findById(decoded.userId)
@@ -336,13 +357,12 @@ server.register([
         if (err) {
             throw err
         }
-        knex('language').insert({language_name: 'English'})
-            .then(() => knex('language').insert({language_name: 'Spanish'}))
-            .then(() => knex('language').insert({language_name: 'German'}))
-            .then(() => knex('language').insert({language_name: 'Chinese'}))
-            .then(() => knex('language').insert({language_name: '\'Merican'}))
-            .then(() => {})
-            .catch(err => {});
+        insertLanguage('English');
+        insertLanguage('Spanish');
+        insertLanguage('German');
+        insertLanguage('Chinese');
+        insertLanguage('\'Merican');
+        insertLanguage('Pig Latin');
         console.log('Server running at', server.info.uri);
     });
 });
