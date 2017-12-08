@@ -1,21 +1,21 @@
 const { Model } = require('objection');
 
-class Payment extends Model {
+class Language extends Model {
     static get tableName() {
-        return 'payment';
+        return 'language';
     }
     static get relationMappings(){
         return {
-            users: {
-                relation: Model.BelongsToOneRelation,
+            payment: {
+                relation: Model.OneToManyRelation,
                 modelClass: __dirname + '/Users',
                 join: {
-                    from: 'payment.login_name',
-                    to: 'users.login_name'
+                    from: 'users.language_id',
+                    to: 'language.language_id'
                 }
             }
         }
     }
 }
 
-module.exports = Payment;
+module.exports = Language;

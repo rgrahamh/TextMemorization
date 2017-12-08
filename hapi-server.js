@@ -7,10 +7,12 @@ const knex = require('knex')(require('./knexfile.js').development);
 const Bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 
+const { Model } = require('objection');
+Model.knex(knex);
 
 const server = new Hapi.Server();
 
-
+const Language = require('./Language.js');
 const Users = require('./Users.js');
 const Payment = require('./Payment.js');
 const JWT_SECRET_KEY = "test-key";//require('./password.js')['jwtkey'];
@@ -80,7 +82,7 @@ server.register([
             method: 'GET',
             path: '/',
             config: {
-                description: 'Home page',
+                description: 'Redirects to login page',
                 notes: ['If status code is 200: return payload of HTML/CSS/JS registration page.',
                     'If status code is 404: return Boom.notFound("Page not found...")'
                 ]
@@ -126,23 +128,32 @@ server.register([
                 }
             },
             handler: function (request, reply) {
-                knex('users').insert(
-                    {
-                        last_name: request.payload.last_name,
-                        first_name: request.payload.first_name,
-                        middle_name: request.payload.middle_name,
-                        preferred_name: request.payload.preferred_name,
-                        login_name: request.payload.login_name,
-                        email: request.payload.email,
-                        preferred_language: request.payload.preferred_language,
-                        address: request.payload.address,
-                        registered_until: Date.now(),
-                        password: hashPassword,
-                        num_succesful_login_attempts: 0,
-                        num_unsuccesful_login_attempts: 0,
-                    }
-                )
-                    .then(reply({ creation: "Successfully created!" }));
+                Language.query()
+                    .where('language_name', 'like', request.payload.preferred_language)
+                    .first()
+                    .then(language => {
+                        if (!language) {
+                            reply("Invalid language");
+                        } else {
+                            knex('users').insert(
+                                {
+                                    last_name: request.payload.last_name,
+                                    first_name: request.payload.first_name,
+                                    middle_name: request.payload.middle_name,
+                                    preferred_name: request.payload.preferred_name,
+                                    login_name: request.payload.login_name,
+                                    email: request.payload.email,
+                                    language_id: language['language_id'],
+                                    address: request.payload.address,
+                                    registered_until: Date.now(),
+                                    password: hashPassword,
+                                    num_succesful_login_attempts: 0,
+                                    num_unsuccesful_login_attempts: 0,
+                                }
+                            )
+                                .then(reply({ creation: "Successfully created!" }));
+                        }
+                    })
             }
         },
         {
@@ -166,12 +177,11 @@ server.register([
                 notes: ['If status code is 200: Creates a new session.',
                     'If status code is 401: return Boom.unauthorized("Incorrect password")',
                     'If status code is 404: return Boom.notFound("Page not found...")',
-                    'We\'re honestly not sure if we need this route or not. We will know once we learn about user authentication!'
                 ],
                 validate: {
                     payload: {
                         user: Joi.string().required().description('The username of the user'),
-                        pass: Joi.string().required().description('The passord of the user'),
+                        pass: Joi.string().required().description('The password of the user'),
                     }
                 }
             },
@@ -304,7 +314,21 @@ server.register([
                 )
                     .then(reply({ payment: "Complete!" }))
             }
-        }
+        },
+        {
+            method: 'GET',
+            path: '/home',
+            config: {
+                description: 'Subscription purchase page',
+                notes: ['If status code is 200: return payload of HTML/CSS/JS subscription purchase page.',
+                    'If status code is 404: return Boom.notFound("Page not found...")'
+                ],
+                auth: { strategy: 'webtoken' }
+            },
+            handler: function (request, reply) {
+                reply.file('./page_files/home.html');
+            }
+        },
     ]);
 
 
