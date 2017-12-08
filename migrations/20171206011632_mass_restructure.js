@@ -9,21 +9,21 @@ exports.up = function(knex, Promise) {
         users.primary('login_name');
     }))
     .then(() => knex.schema.alterTable('payment', pay => {
-        pay.string('login_name');
+        pay.string('login_name').notNull();
         pay.dropColumn('user_id');
     }));
 };
 
 exports.down = function(knex, Promise) {
     return knex.schema.createTable('session', table => {
-        table.increments('login_id');
-        table.dateTime('last_request_time');
+        table.increments('login_id').notNull();
+        table.dateTime('last_request_time').notNull();
     })
     .then(() => knex.schema.alterTable('auth', auth => {
         auth.dropPrimary();
     }))
     .then(() => knex.schema.alterTable('auth', auth => {
-        auth.increments('login_id').primary();
+        auth.increments('login_id').notNull();
     }))
     .then(() => knex.schema.alterTable('users', users => {
         users.dropPrimary()
@@ -32,7 +32,7 @@ exports.down = function(knex, Promise) {
         users.increments('user_id').primary();
     }))
     .then(() => knex.schema.alterTable('payment', pay => {
-        pay.integer('user_id');
+        pay.integer('user_id').notNull();
         pay.dropColumn('login_name');
     }));
 };
