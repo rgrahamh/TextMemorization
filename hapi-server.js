@@ -331,12 +331,21 @@ server.register([
         },
     ]);
 
-    module.exports = server;
 
     server.start(err => {
         if (err) {
             throw err
         }
+        knex('language').insert({language_name: 'English'})
+            .then(() => knex('language').insert({language_name: 'Spanish'}))
+            .then(() => knex('language').insert({language_name: 'German'}))
+            .then(() => knex('language').insert({language_name: 'Chinese'}))
+            .then(() => knex('language').insert({language_name: '\'Merican'}))
+            .then(() => {})
+            .catch(err => {});
         console.log('Server running at', server.info.uri);
     });
 });
+
+module.exports = server;
+
