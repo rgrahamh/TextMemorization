@@ -307,7 +307,6 @@ server.register([
         }
     ]);
 
-    module.exports = server;
 
     server.start(err => {
         if (err) {
@@ -316,3 +315,6 @@ server.register([
         console.log('Server running at', server.info.uri);
     });
 });
+
+module.exports = server;
+
