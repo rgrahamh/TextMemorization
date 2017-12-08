@@ -80,7 +80,7 @@ server.register([
             method: 'GET',
             path: '/',
             config: {
-                description: 'Home page',
+                description: 'Redirects to login page',
                 notes: ['If status code is 200: return payload of HTML/CSS/JS registration page.',
                     'If status code is 404: return Boom.notFound("Page not found...")'
                 ]
