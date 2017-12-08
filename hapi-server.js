@@ -38,6 +38,12 @@ function createToken(userId) {
     );
 }
 
+//Inserts a language; language must be a string
+function insertLanguage(lang) {
+    knex('language').insert({language_name: lang})
+    .catch(err => {});
+}
+
 function validateUser(decoded, request, callback) {
     if (decoded.hasOwnProperty('userId')) {
         User.query().findById(decoded.userId)
@@ -347,6 +353,7 @@ server.register([
         if (err) {
             throw err
         }
+<<<<<<< HEAD
         knex('language').insert({ language_name: 'English' })
             .then(() => knex('language').insert({ language_name: 'Spanish' }))
             .then(() => knex('language').insert({ language_name: 'German' }))
@@ -354,6 +361,14 @@ server.register([
             .then(() => knex('language').insert({ language_name: '\'Merican' }))
             .then(() => { })
             .catch(err => { });
+=======
+        insertLanguage('English');
+        insertLanguage('Spanish');
+        insertLanguage('German');
+        insertLanguage('Chinese');
+        insertLanguage('\'Merican');
+        insertLanguage('Pig Latin');
+>>>>>>> 294e38d1cf0d2b4007218d6cefaa286f11eec063
         console.log('Server running at', server.info.uri);
     });
 });
