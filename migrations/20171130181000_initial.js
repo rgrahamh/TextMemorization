@@ -1,34 +1,34 @@
 exports.up = function(knex, Promise) {
     return knex.schema
         .createTable('session', table => {
-        table.increments('login_id');
-        table.dateTime('last_request_time');
+        table.increments('login_id').notNull();
+        table.dateTime('last_request_time').notNull();
     })
     .then(() => knex.schema.createTable('auth', table => {
         table.increments('login_id');
-        table.string('login_name');
-        table.string('password');
-        table.integer('num_successful_attempts');
-        table.integer('num_unsuccessful_attempts');
+        table.string('login_name').notNull();
+        table.string('password').notNull();
+        table.integer('num_successful_attempts').notNull();
+        table.integer('num_unsuccessful_attempts').notNull();
     }))
     .then(() => knex.schema.createTable('users', table => {
         table.increments('user_id');
-        table.string('login_name');
-        table.string('last_name');
-        table.string('first_name');
-        table.string('middle_name');
-        table.string('preferred_name');
-        table.string('email');
-        table.string('preferred_language');
-        table.string('address');
-        table.boolean('is_registered');
+        table.string('login_name').notNull();
+        table.string('last_name').notNull();
+        table.string('first_name').notNull();
+        table.string('middle_name').notNull();
+        table.string('preferred_name').notNull();
+        table.string('email').notNull();
+        table.string('preferred_language').notNull();
+        table.string('address').notNull();
+        table.boolean('is_registered').notNull();
     }))
     .then(() => knex.schema.createTable('payment', table => {
         table.increments('transaction_id');
-        table.integer('user_id');
-        table.float('cost');
-        table.dateTime('date');
-        table.boolean('paid');
+        table.integer('user_id').notNull();
+        table.float('cost').notNull();
+        table.dateTime('date').notNull();
+        table.boolean('paid').notNull();
     }));
 };
 
