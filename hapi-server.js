@@ -40,23 +40,8 @@ function createToken(userId) {
 
 //Inserts a language; language must be a string
 function insertLanguage(lang) {
-    Language.query()
-        .then(langIter => {
-            langIter.forEach(i => {
-                var insert = true;
-                if(i == lang){
-                    insert = false;
-                }
-                if(insert){
-                    knex('language').insert({language_name: lang})
-                    .catch(err => {});
-                }
-                else{
-                    console.log(lang + ' is already in the table.');
-                }
-            })
-        })
-        .catch(err => {});
+    knex('language').insert({language_name: lang})
+    .catch(err => {});
 }
 
 function validateUser(decoded, request, callback) {
