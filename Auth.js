@@ -22,7 +22,7 @@ class Auth extends Model {
                     to: 'users.login_name'
                 }
             }
-        }
+        };
     }
 }
 
