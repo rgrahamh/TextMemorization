@@ -13,11 +13,11 @@ exports.up = function(knex, Promise) {
     }))
     .then(() => knex.schema.createTable('users', table => {
         table.increments('user_id');
+        table.string('login_name');
         table.string('last_name');
         table.string('first_name');
         table.string('middle_name');
         table.string('preferred_name');
-        table.string('login_name');
         table.string('email');
         table.string('preferred_language');
         table.string('address');
