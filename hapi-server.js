@@ -40,8 +40,8 @@ function createToken(userId) {
 
 //Inserts a language; language must be a string
 function insertLanguage(lang) {
-    knex('language').insert({language_name: lang})
-    .catch(err => {});
+    knex('language').insert({ language_name: lang })
+        .catch(err => { });
 }
 
 function validateUser(decoded, request, callback) {
@@ -135,43 +135,53 @@ server.register([
                 }
             },
             handler: function (request, reply) {
-                Language.query()
-                    .where('language_name', 'like', request.payload.preferred_language)
-                    .first()
-                    .then(language => {
-                        console.log(language);
-                        if (!language) {
-                            reply("Invalid language");
+                Users.query()
+                    .where('login_name', request.payload.login_name)
+                    .count()
+                    .then(rows => {
+                        if (rows > 0) {
+                            reply("Username taken")
                         } else {
-                            hashPassword(request.payload.password)
-                                .then(hashedPass => {
-                                    var now = new Date();
-                                    knex('users')
-                                    .insert(
-                                    {
-                                        last_name: request.payload.last_name,
-                                        first_name: request.payload.first_name,
-                                        middle_name: request.payload.middle_name,
-                                        preferred_name: request.payload.preferred_name,
-                                        login_name: request.payload.login_name,
-                                        email: request.payload.email,
-                                        language_id: language['language_id'],
-                                        address: request.payload.address,
-                                        registered_until: now.toISOString(),
-                                        password: hashedPass,
-                                        num_successful_login_attempts: 0,
-                                        num_unsuccessful_login_attempts: 0,
-                                    }
-                                    ).then(reply({ creation: "Successfully created!"}))
-                                    .catch(error => {
-                                        console.error(error);
-                                        console.log("bad");
-                                    });
-                                    
-                                })
+                            Language.query()
+                                .where('language_name', 'like', request.payload.preferred_language)
+                                .first()
+                                .then(language => {
+                                    console.log(language);
+                                    if (!language) {
+                                        reply("Invalid language");
+                                    } else {
+                                        hashPassword(request.payload.password)
+                                            .then(hashedPass => {
+                                                var now = new Date();
+                                                knex('users')
+                                                    .insert(
+                                                    {
+                                                        last_name: request.payload.last_name,
+                                                        first_name: request.payload.first_name,
+                                                        middle_name: request.payload.middle_name,
+                                                        preferred_name: request.payload.preferred_name,
+                                                        login_name: request.payload.login_name,
+                                                        email: request.payload.email,
+                                                        language_id: language['language_id'],
+                                                        address: request.payload.address,
+                                                        registered_until: now.toISOString(),
+                                                        password: hashedPass,
+                                                        num_successful_login_attempts: 0,
+                                                        num_unsuccessful_login_attempts: 0,
+                                                    }
+                                                    ).then(reply({ creation: "Successfully created!" }))
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                        console.log("bad");
+                                                    });
 
+                                            })
+
+                                    }
+                                })
                         }
                     })
+
             }
         },
         {
