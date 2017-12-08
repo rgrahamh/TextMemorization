@@ -14,7 +14,7 @@ lab.experiment('routes', () => {
     });
 
     lab.test('omit field in /make-account', done => {
-        server.inject({ method: 'PUT',
+        server.inject({ method: 'POST',
                         url: '/make-account', 
                         payload: { 
                             last_name: "Last", 
@@ -29,10 +29,22 @@ lab.experiment('routes', () => {
                         },
                         },
                         response => {
-                            expect(JSON.parse(response.payload)).to.equal({ "creation": "Successfully created! "});
+                            expect(JSON.parse(response.payload)).to.equal({ "creation": "Successfully created!"});
                             done();
                         });
-        });
+    });
+
+    lab.test('try to find page that doesn\'t exist', done => {
+        server.inject({ method: 'GET',
+                        url: '/fake-url',
+                        payload: {},
+                        },
+                        response => {
+                            expect(JSON.parse(response.statusCode)).to.equal(404);
+                            done();
+                        });
+    });
+                            
 
 });
 
