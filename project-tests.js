@@ -66,7 +66,7 @@ lab.experiment('routes', () => {
                         url: '/login',
                         payload: {
                             user: "test",
-                            password: "password"
+                            pass: "password"
                         },
                         },
                         response => {
@@ -80,7 +80,7 @@ lab.experiment('routes', () => {
                         url: '/login',
                         payload: {
                             user: "nonexistent-user",
-                            password: "password"
+                            pass: "password"
                         },
                         },
                         response => {
@@ -94,7 +94,7 @@ lab.experiment('routes', () => {
                         url: '/login',
                         payload: {
                             user: "test",
-                            password: "wrong-password"
+                            pass: "wrong-password"
                         },
                         },
                         response => {
@@ -107,7 +107,7 @@ lab.experiment('routes', () => {
         server.inject({ method: 'POST',
                         url: '/login',
                         payload: {
-                            password: "password"
+                            pass: "password"
                         },
                         },
                         response => {
@@ -220,7 +220,7 @@ lab.experiment('routes', () => {
         server.inject({ method: 'PUT',
                         url: '/purchase',
                         payload: {
-                            user_id: '1'
+                            user_id: 'test'
                         },
                         },
                         response => {
